@@ -1,0 +1,144 @@
+/* Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Poppins", sans-serif;
+    background: url('../img/bg2.jpg') center/cover no-repeat fixed;
+    padding: 25px;
+    min-height: 100vh;
+}
+
+/* Tombol kembali */
+.back-button {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    width: 46px;
+    height: 46px;
+
+    background: rgba(255, 255, 255, 0.55);
+    backdrop-filter: blur(10px);
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    text-decoration: none;
+    color: #333;
+    transition: .3s ease;
+}
+
+.back-button:hover {
+    transform: scale(1.08);
+    background: rgba(255, 255, 255, 0.85);
+}
+
+/* Steps */
+.container {
+    max-width: 800px;
+    margin: 80px auto 0 auto;
+}
+
+.steps {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 25px;
+}
+
+.step {
+    background: white;
+    padding: 8px 20px;
+    border-radius: 20px;
+    border: 2px solid #ccc;
+    color: #888;
+    font-weight: 500;
+}
+
+.step.active {
+    background: #e6f7ea;
+    border-color: #1b8f3c;
+    color: #1b8f3c;
+}
+
+.step-line {
+    flex-grow: 1;
+    max-width: 150px;
+    margin: 0 10px;
+    border-top: 2px dashed #bbb;
+}
+
+/* Card Hasil */
+.result-card {
+    position: relative;
+    background: white;
+    padding: 25px;
+    border-radius: 16px;
+    margin-bottom: 25px;
+    border-top: 5px solid #ffc107;
+
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+
+    max-width: 520px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.result-card h3 {
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+.result-card h4 {
+    margin-top: 10px;
+    font-size: 15px;
+    margin-bottom: 10px;
+}
+
+.result-card ul {
+    padding-left: 20px;
+}
+
+.result-card li {
+    font-size: 14px;
+    margin-bottom: 6px;
+}
+
+.rule-text {
+    font-size: 12px;
+    color: #777;
+    margin-top: 12px;
+}
+
+
+.leaf-1 {
+    position: absolute;
+    width: 55px;
+    top: -25px;
+    right: -15px;
+    transform: rotate(-20deg);
+    z-index: 2;
+}
+
+.leaf-2 {
+    position: absolute;
+    width: 55px;
+    bottom: 20px;
+    left: -20px;
+    transform: rotate(160deg);
+    z-index: 2;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .result-card {
+        margin-top: 15px;
+    }
+}

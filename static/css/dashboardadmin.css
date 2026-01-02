@@ -1,0 +1,484 @@
+/* =======================================
+   GLOBAL COLOR SETTINGS
+======================================= */
+:root {
+    --color-bg: #f0f7f0;
+    --color-bg-sidebar-active: #c8e6c9;
+    --color-text-sidebar-active: #2e7d32;
+    --color-primary: #4caf50;
+    --color-white: #ffffff;
+    --color-text: #333333;
+    --color-text-secondary: #777777;
+    --color-border: #e0e8e3;
+    --radius-main: 15px;
+    --shadow-main: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* =======================================
+   RESET
+======================================= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: var(--color-bg);
+    color: var(--color-text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* =======================================
+   HEADER
+======================================= */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--color-white);
+    padding: 15px 30px;
+    border-radius: var(--radius-main);
+    margin: 20px;
+    margin-bottom: 0;
+    box-shadow: var(--shadow-main);
+}
+
+header h1 { 
+    font-size: 24px; 
+    font-weight: 600; 
+}
+
+header .profile {
+    position: relative;
+    width: 45px;
+    height: 45px;
+    background: var(--color-bg-sidebar-active);
+    border-radius: 50%;
+}
+
+.profile-user-icon {
+    font-size: 30px;
+    color: var(--color-text-sidebar-active);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.card-leaf-decoration2 {
+    position: absolute;
+    width: 40px;
+    top: -10px;
+    right: -15px;
+    transform: rotate(180deg);
+}
+
+/* =======================================
+   USERNAME + PROFILE FIXED POSITIONING
+   (DITAMBAHKAN)
+======================================= */
+.profile-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px; /* Jarang username ↔ icon */
+}
+
+.profile-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--color-text);
+    white-space: nowrap; /* agar tidak turun */
+}
+
+/* =======================================
+   LAYOUT WRAPPER
+======================================= */
+.container {
+    display: flex;
+    gap: 20px;
+    padding: 20px;
+    width: 100%;
+    flex-grow: 1;
+}
+
+/* =======================================
+   SIDEBAR (VERSI STABIL)
+======================================= */
+.sidebar {
+    width: 260px !important;
+    background: var(--color-white);
+    border-radius: var(--radius-main);
+    padding: 20px;
+    box-shadow: var(--shadow-main);
+}
+
+.sidebar ul { list-style: none; }
+
+.sidebar ul li a {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px !important;
+    margin-bottom: 10px;
+    text-decoration: none;
+    font-weight: 500;
+    border-radius: 12px !important;
+    color: var(--color-text-secondary);
+    transition: all 0.25s ease;
+}
+
+.sidebar ul li a .material-icons-outlined {
+    margin-right: 12px !important;
+    font-size: 24px !important;
+}
+
+.sidebar ul li a:hover {
+    background: #e8f5e9 !important;
+}
+
+.sidebar ul li a.active {
+    background: var(--color-bg-sidebar-active) !important;
+    color: var(--color-text-sidebar-active) !important;
+    border-radius: 12px !important;
+}
+
+/* =======================================
+   MAIN CONTENT
+======================================= */
+.main-content {
+    flex-grow: 1;
+}
+
+/* =======================================
+   TABLE WRAPPER
+======================================= */
+.table-wrapper {
+    background: var(--color-white);
+    padding: 25px;
+    border-radius: 20px;
+    margin-top: 20px;
+    box-shadow: var(--shadow-main);
+    position: relative;
+    overflow: hidden;
+}
+
+.table-wrapper::before {
+    content: "";
+    background: url("/static/img/Daun.png");
+    background-size: 70px;
+    background-repeat: no-repeat;
+    opacity: 0.12;
+    width: 120px;
+    height: 120px;
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    transform: rotate(15deg);
+}
+
+/* =======================================
+   CUSTOM TABLE
+======================================= */
+.table-custom {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table-custom th,
+.table-custom td {
+    border-right: 1px solid var(--color-border);
+}
+
+.table-custom th:last-child,
+.table-custom td:last-child {
+    border-right: none;
+}
+
+.table-custom thead th {
+    padding: 14px 12px;
+    background: #f1f8f1;
+    color: #2d4d2d;
+    text-transform: uppercase;
+    font-size: 14px;
+    font-weight: 700;
+    border-bottom: 2px solid #ccd9cd;
+}
+
+.table-custom tbody td {
+    padding: 12px;
+    border-bottom: 1px solid #e6eee6;
+}
+
+.table-custom tbody tr:hover {
+    background: #f3faf3;
+    transition: 0.2s ease;
+}
+
+.action-btn {
+    font-weight: 600;
+    margin-right: 10px;
+    text-decoration: none;
+}
+
+.action-edit { color: #2e7d32; }
+.action-delete { color: #d32f2f; }
+
+.btn-add {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #4caf50;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    font-size: 14px;
+    box-shadow: 0 4px 10px rgba(76, 175, 80, 0.25);
+    transition: all 0.25s ease;
+}
+
+.btn-add:hover {
+    background: #43a047;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(76, 175, 80, 0.35);
+}
+
+.btn-add:active {
+    transform: scale(0.97);
+}
+
+.btn-add-leaf {
+    position: relative;
+}
+
+.btn-add-leaf::after {
+    content: "";
+    background: url("/static/img/Daun.png");
+    background-size: 18px;
+    background-repeat: no-repeat;
+    width: 18px;
+    height: 18px;
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    opacity: 0.9;
+}
+
+/* =======================================
+   MODAL POPUP
+======================================= */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.45);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(3px);
+    z-index: 3000;
+}
+
+.modal-box {
+    width: 420px;
+    background: #ffffff;
+    padding: 25px 30px;
+    border-radius: 18px;
+    box-shadow: 0 8px 28px rgba(0,0,0,0.15);
+    position: relative;
+    animation: modalFade 0.25s ease-out;
+}
+
+@keyframes modalFade {
+    from { transform: translateY(-20px); opacity: 0; }
+    to   { transform: translateY(0); opacity: 1; }
+}
+
+.modal-close {
+    position: absolute;
+    right: 18px;
+    top: 15px;
+    cursor: pointer;
+    font-size: 22px;
+    color: #666;
+}
+
+.modal-box input,
+.modal-box textarea,
+.modal-box select {
+    width: 100%;
+    padding: 12px;
+    margin-top: 8px;
+    margin-bottom: 15px;
+    border-radius: 10px;
+    border: 1px solid #c8dec8;
+    background: #f3faf3;
+    outline: none;
+    font-size: 14px;
+    transition: .2s;
+}
+
+.btn-modal-submit {
+    width: 100%;
+    padding: 12px;
+    background: #4caf50;
+    color: white;
+    border-radius: 12px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    font-size: 15px;
+    transition: .2s;
+}
+
+/* ============================
+   MODAL DELETE (VERSI RAPI)
+============================= */
+
+.modal-box.small {
+    width: 360px; /* lebih kecil dari modal tambah/edit */
+    padding: 25px 28px;
+    border-radius: 18px;
+    background: #ffffff;
+    box-shadow: 0 6px 24px rgba(0,0,0,0.15);
+    position: relative;
+    animation: modalFade 0.25s ease-out;
+    text-align: center; /* isi text rata tengah */
+}
+
+.modal-box.small h3 {
+    margin-bottom: 12px;
+    font-size: 20px;
+    font-weight: 700;
+    color: #2fd358; /* merah lembut = cocok untuk delete */
+}
+
+.modal-box.small p {
+    font-size: 14px;
+    color: #444;
+    margin-bottom: 20px;
+}
+
+.modal-btn-row {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+/* Tombol Batal */
+.btn-cancel {
+    padding: 10px 22px;
+    background: #e0e0e0;
+    border: none;
+    border-radius: 10px;
+    color: #333;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-cancel:hover {
+    background: #cfcfcf;
+    transform: translateY(-2px);
+}
+
+/* Tombol Hapus */
+.btn-delete {
+    padding: 10px 22px;
+    background: #d32f2f;
+    border: none;
+    border-radius: 10px;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-delete:hover {
+    background: #b71c1c;
+    transform: translateY(-2px);
+}
+
+/* Close button */
+.modal-close {
+    font-size: 22px;
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    cursor: pointer;
+    color: #666;
+    transition: 0.2s;
+}
+
+.modal-close:hover {
+    color: #000;
+}
+
+/* ============================
+   BUTTON SIMPAN (HIJAU)
+============================ */
+.btn-modal-submit {
+    width: 100%;
+    padding: 12px 0;
+    border-radius: 8px;
+    background: #22c55e;   /* hijau fresh */
+    color: white;
+    border: none;
+    margin-top: 18px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.25s ease;
+}
+
+/* Hover effect */
+.btn-modal-submit:hover {
+    background: #16a34a; /* hijau tua */
+    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.4);
+    transform: translateY(-2px);
+}
+
+/* Saat ditekan */
+.btn-modal-submit:active {
+    transform: translateY(0);
+    background: #15803d;
+}
+
+/* ============================
+   BUTTON SIMPAN (Modal Add)
+============================ */
+.btn-submit {
+    width: 100%;
+    padding: 12px 0;
+    border-radius: 8px;
+    background: #22c55e;  /* hijau emerald */
+    color: white;
+    border: none;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 18px;
+    transition: 0.25s ease;
+}
+
+/* Hover */
+.btn-submit:hover {
+    background: #16a34a; /* hijau lebih gelap */
+    box-shadow: 0px 4px 12px rgba(34, 197, 94, 0.35);
+    transform: translateY(-2px);
+}
+
+/* Saat ditekan */
+.btn-submit:active {
+    transform: translateY(0);
+    background: #15803d;
+}
+
+

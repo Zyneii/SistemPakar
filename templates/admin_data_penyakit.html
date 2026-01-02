@@ -1,0 +1,131 @@
+{% extends "dashboard_admin.html" %}
+
+{% block content %}
+
+<h2>Data Penyakit</h2>
+
+<a onclick="openAddModal()" class="btn-add btn-add-leaf">Tambah Penyakit</a>
+
+<div class="table-wrapper">
+    <table class="table-custom">
+        <thead>
+            <tr>
+                <th>ID Penyakit</th>
+                <th>Nama Penyakit</th>
+                <th>Solusi</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for p in penyakit %}
+            <tr>
+                <td>{{ p.id_penyakit }}</td>
+                <td>{{ p.Nama_penyakit }}</td>
+                <td>{{ p.solusi }}</td>
+                <td>
+
+                    <!-- ========= EDIT ========= -->
+                    <a href="#" class="action-btn action-edit"
+                       onclick="openEditModal(this)"
+                       data-id="{{ p.id_penyakit }}"
+                       data-nama="{{ p.Nama_penyakit }}"
+                       data-solusi="{{ p.solusi }}"
+                       data-action="/penyakit/edit/{{ p.id_penyakit }}">
+                       Edit
+                    </a>
+
+                    <!-- ========= HAPUS ========= -->
+                    <a href="#" class="action-btn action-delete"
+                       onclick="openDeleteModal(this)"
+                       data-id="{{ p.id_penyakit }}"
+                       data-action="/penyakit/hapus/{{ p.id_penyakit }}">
+                       Hapus
+                    </a>
+
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+
+    </table>
+</div>
+
+
+
+<!-- ======================================================
+     MODAL TAMBAH PENYAKIT
+========================================================= -->
+<div id="modalAdd" class="modal-overlay">
+    <div class="modal-box">
+        <span class="modal-close" onclick="closeAddModal()">&times;</span>
+        <h3>Tambah Penyakit</h3>
+
+        <form action="{{ url_for('tambah_penyakit') }}" method="POST">
+
+            <label>ID Penyakit</label>
+            <input type="text" name="id_penyakit" required>
+
+            <label>Nama Penyakit</label>
+            <input type="text" name="nama_penyakit" required>
+
+            <label>Solusi</label>
+            <textarea name="solusi" required></textarea>
+
+            <button type="submit" class="btn-modal-submit">Simpan</button>
+        </form>
+    </div>
+</div>
+
+
+
+<!-- ======================================================
+     MODAL EDIT PENYAKIT
+========================================================= -->
+<div id="modalEdit" class="modal-overlay">
+    <div class="modal-box">
+        <span class="modal-close" onclick="closeEditModal()">&times;</span>
+        <h3>Edit Penyakit</h3>
+
+        <form id="formEdit" method="POST">
+
+            <label>ID Penyakit</label>
+            <input type="text" id="edit_id" name="id_penyakit" readonly>
+
+            <label>Nama Penyakit</label>
+            <input type="text" id="edit_nama" name="nama_penyakit" required>
+
+            <label>Solusi</label>
+            <textarea id="edit_solusi" name="solusi" required></textarea>
+
+            <button type="submit" class="btn-modal-submit">Simpan</button>
+        </form>
+    </div>
+</div>
+
+
+
+<!-- ======================================================
+     MODAL HAPUS PENYAKIT
+========================================================= -->
+<div id="modalDelete" class="modal-overlay">
+    <div class="modal-box small">
+        <span class="modal-close" onclick="closeDeleteModal()">&times;</span>
+
+        <h3>Hapus Penyakit</h3>
+        <p>Apakah Anda yakin ingin menghapus ID: <b id="delete_id_show"></b> ?</p>
+
+        <form id="deleteForm" method="POST">
+            <input type="hidden" id="delete_id" name="id">
+            <div class="modal-btn-row">
+                <button type="button" class="btn-cancel" onclick="closeDeleteModal()">Batal</button>
+                <button type="submit" class="btn-delete">Hapus</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<script src="{{ url_for('static', filename='js/modal_universal.js') }}"></script>
+
+{% endblock %}

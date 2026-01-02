@@ -1,0 +1,134 @@
+{% extends "dashboard_admin.html" %}
+{% block content %}
+
+<h2>Data Rule</h2>
+
+<a onclick="openAddRuleModal()" class="btn-add btn-add-leaf">Tambah Rule</a>
+
+<div class="table-wrapper">
+    <table class="table-custom">
+        <thead>
+            <tr>
+                <th>ID Rule</th>
+                <th>Antecedents (Gejala)</th>
+                <th>Penyakit</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for r in rules %}
+            <tr>
+                <td>{{ r.id_rule }}</td>
+                <td>{{ r.antecedents }}</td>
+                <td>{{ r.penyakit }}</td>
+                <td>
+
+                    <!-- BTN EDIT -->
+                    <a href="#" class="action-btn action-edit" onclick="openEditRuleModal(
+                                '{{ r.id_rule }}',
+                                '{{ r.antecedents }}',
+                                '{{ r.penyakit }}'
+                              )">
+                        Edit
+                    </a>
+
+                    <!-- BTN HAPUS -->
+                    <a href="#" class="action-btn action-delete" onclick="openDeleteRuleModal('{{ r.id_rule }}')">
+                        Hapus
+                    </a>
+
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+
+    </table>
+</div>
+
+
+<!-- ===========================================
+     MODAL TAMBAH RULE
+=========================================== -->
+<div id="modalAddRule" class="modal-overlay">
+    <div class="modal-box">
+        <span class="modal-close" onclick="closeAddRuleModal()">&times;</span>
+        <h3>Tambah Rule</h3>
+
+        <form action="{{ url_for('tambah_rule') }}" method="POST" class="form-custom">
+
+            <label>ID Rule</label>
+            <input type="text" name="id_rule" required>
+
+            <label>Rule</label>
+            <input type="text" name="gejala" required>
+
+
+            <label>Pilih Penyakit (Consequent)</label>
+            <select name="penyakit" required>
+                <option value="">-- pilih penyakit --</option>
+                {% for p in penyakit %}
+                <option value="{{ p.id_penyakit }}">{{ p.id_penyakit }} - {{ p.Nama_penyakit }}</option>
+                {% endfor %}
+            </select>
+
+            <button type="submit" class="btn-submit">Simpan</button>
+        </form>
+    </div>
+</div>
+
+
+<!-- ===========================================
+     MODAL EDIT RULE
+=========================================== -->
+<div id="modalEditRule" class="modal-overlay">
+    <div class="modal-box">
+        <span class="modal-close" onclick="closeEditRuleModal()">&times;</span>
+        <h3>Edit Rule</h3>
+
+        <form id="formEditRule" method="POST">
+
+            <label>ID Rule</label>
+            <input type="text" id="edit_id_rule" name="id_rule" readonly>
+
+            <label>Rule</label>
+            <input type="text" name="gejala" required>
+
+            <label>Pilih Penyakit (Consequent)</label>
+            <select id="edit_penyakit" name="penyakit" required>
+                <option value="">-- pilih penyakit --</option>
+                {% for p in penyakit %}
+                <option value="{{ p.id_penyakit }}">{{ p.Nama_penyakit }}</option>
+                {% endfor %}
+            </select>
+
+            <button type="submit" class="btn-modal-submit">Simpan Perubahan</button>
+
+        </form>
+    </div>
+</div>
+
+
+<!-- ===========================================
+     MODAL HAPUS RULE
+=========================================== -->
+<div id="modalDeleteRule" class="modal-overlay">
+    <div class="modal-box small">
+
+        <span class="modal-close" onclick="closeDeleteRuleModal()">&times;</span>
+
+        <h3>Hapus Rule</h3>
+        <p>Anda yakin ingin menghapus rule dengan ID <b id="delete_rule_show"></b> ?</p>
+
+        <form id="formDeleteRule" method="POST">
+            <div class="modal-btn-row">
+                <button type="button" class="btn-cancel" onclick="closeDeleteRuleModal()">Batal</button>
+                <button type="submit" class="btn-delete">Hapus</button>
+            </div>
+        </form>
+
+    </div>
+</div>
+
+
+{% endblock %}

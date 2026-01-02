@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagnosa Tanaman</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/diagnosis.css') }}">
+</head>
+
+<body>
+
+    <a href="{{ url_for('home') }}" class="back-button" aria-label="Kembali">
+        <span class="material-symbols-outlined">arrow_back</span>
+    </a>
+
+    <div class="container">
+
+        <div class="steps">
+            <div class="step active">
+                <span>Pilih Gejala</span>
+            </div>
+            <div class="step-line"></div>
+            <div class="step">
+                <span>Hasil Diagnosis</span>
+            </div>
+        </div>
+
+        <div class="diagnosis-card">
+
+            <!-- ===================== SEARCH ===================== -->
+            <div class="search-header">
+                <div class="search-bar">
+                    <span class="material-symbols-outlined">search</span>
+                    <input type="text" placeholder="Search">
+                </div>
+
+                <button class="leaf-icon-btn">
+                    <span class="material-symbols-outlined">eco</span>
+                </button>
+            </div>
+
+            <!-- ===================== FILTER BUTTONS ===================== -->
+            <div class="filter-buttons">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="daun">Daun</button>
+                <button class="filter-btn" data-filter="batang">Batang</button>
+                <button class="filter-btn" data-filter="akar">Akar</button>
+                <button class="filter-btn" data-filter="tanaman">Tanaman</button>
+            </div>
+
+            <!-- ===================== FORM GEJALA ===================== -->
+            <form action="{{ url_for('proses_diagnosa') }}" method="POST">
+
+                <div class="symptom-grid">
+                    {% for gejala in daftar_gejala %}
+                    <div class="symptom-item" data-kategori="{{ gejala['kategori']}}">
+
+                        <input type="checkbox" name="gejala" value="{{ gejala['id_gejala'] }}"
+                            id="gejala_{{ gejala['id_gejala'] }}" class="symptom-checkbox">
+
+                        <label for="gejala_{{ gejala['id_gejala'] }}" class="symptom-card">
+                           <span class="material-symbols-outlined icon">spa</span>
+
+
+                            <p class="symptom-name">{{ gejala['Nama_gejala'] }}</p>
+
+                            <span class="material-symbols-outlined checkmark">check_circle</span>
+                        </label>
+
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <button type="submit" class="diagnose-btn">
+                    Diagnosa Sekarang
+                </button>
+
+            </form>
+
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/diagnosa.js') }}"></script>
+
+</body>
+
+</html>

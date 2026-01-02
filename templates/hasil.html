@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hasil Diagnosa</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/hasil.css') }}">
+</head>
+
+<body>
+
+    <!-- Tombol Kembali di Pojok Kiri -->
+    <a href="{{ url_for('halaman_diagnosa') }}" class="back-button">
+        <span class="material-symbols-outlined">arrow_back</span>
+    </a>
+
+    <div class="container">
+
+        <!-- Steps -->
+        <div class="steps">
+            <div class="step">
+                <span>Pilih Gejala</span>
+            </div>
+            <div class="step-line"></div>
+            <div class="step active">
+                <span>Hasil Diagnosis</span>
+            </div>
+        </div>
+
+        {% if hasil %}
+            {% for h in hasil %}
+
+            <div class="result-card">
+
+                <!-- Dekorasi daun -->
+                <img src="{{ url_for('static', filename='img/daun.png') }}" class="leaf-1">
+                <img src="{{ url_for('static', filename='img/daun.png') }}" class="leaf-2">
+
+                <h3>{{ h.nama }}</h3>
+
+                <h4>Solusi Penanganan:</h4>
+                <ul>
+                    {% for s in h.solusi %}
+                    <li>{{ s }}</li>
+                    {% endfor %}
+                </ul>
+
+            </div>
+
+            {% endfor %}
+
+        {% else %}
+
+        <div class="result-card">
+            <h3>Tidak ada hasil diagnosa.</h3>
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</body>
+
+</html>

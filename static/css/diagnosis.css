@@ -1,0 +1,397 @@
+/* Pengaturan Dasar & Font */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    position: relative;
+    overflow-x: hidden;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: url('../img/background.jpg') center / cover no-repeat;
+    z-index: -1;
+}
+
+@media (max-width: 768px) {
+    body::before {
+        background-image: url('../img/bg4.jpg');
+        background-size: cover;
+        background-position: center top;
+        background-color: #000;
+    }
+}
+
+.container {
+    width: 100%;
+    max-width: 800px;
+    /* Lebar maksimum kontainer */
+}
+
+
+.steps {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.step {
+    background: #fff;
+    border-radius: 20px;
+    padding: 8px 20px;
+    font-weight: 500;
+    color: #888;
+    border: 2px solid #ddd;
+}
+
+.step.active {
+    background: #e6f7ea;
+    /* Hijau muda */
+    color: #28a745;
+    /* Hijau tua */
+    border: 2px solid #28a745;
+}
+
+.step-line {
+    flex-grow: 1;
+    height: 2px;
+    border-top: 2px dashed #ccc;
+    margin: 0 10px;
+    max-width: 150px;
+}
+
+/* Kartu Utama - Efek Kaca Buram */
+.diagnosis-card {
+    background: rgba(255, 255, 255, 0.3);
+    /* Transparansi */
+    backdrop-filter: blur(15px);
+    /* EFEK KACA BURAM */
+    -webkit-backdrop-filter: blur(15px);
+    /* Dukungan untuk Safari */
+    border-radius: 24px;
+    padding: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+      min-height: 70vh;
+}
+
+/* Bar Pencarian */
+
+/* Header Pencarian Baru */
+.search-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    /* Jarak antara search-bar dan tombol daun */
+    margin-bottom: 20px;
+}
+
+/* Modifikasi Bar Pencarian agar punya batas */
+.search-bar {
+    flex-grow: 1;
+    /* Membuat search-bar mengisi ruang */
+    display: flex;
+    align-items: center;
+    background: #fff;
+    border-radius: 15px;
+    padding: 10px 15px;
+    /* INI BAGIAN PENTING: Menambahkan batas/bayangan */
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.search-bar input {
+    border: none;       /* Hapus batas default */
+    outline: none;      /* Hapus 'glow' biru saat diklik */
+    background: transparent; /* Hapus latar belakang default */
+    width: 100%;        /* Buat input mengisi ruang */
+    font-family: 'Poppins', sans-serif; /* Samakan font-nya */
+    font-size: 1rem;
+    color: #333; /* Warna teks saat mengetik */
+}
+
+/* (Opsional) Mengatur warna placeholder text */
+.search-bar input::placeholder {
+    color: #aaa;
+}
+/* Tombol Ikon Daun Baru */
+.leaf-icon-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #28a745;
+    /* Warna hijau */
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    /* Membuatnya bulat */
+    width: 44px;
+    /* Ukuran tombol */
+    height: 44px;
+    /* Ukuran tombol */
+    cursor: pointer;
+    transition: background 0.3s ease;
+    flex-shrink: 0;
+    /* Mencegah tombol menyusut */
+}
+
+.leaf-icon-btn:hover {
+    background: #218838;
+    /* Hijau lebih gelap */
+}
+
+.leaf-icon-btn .material-symbols-outlined {
+    font-size: 1.5rem;
+}
+
+/* Tombol Filter */
+.filter-buttons {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    overflow-x: auto;
+   
+    overflow-x: auto;   /* 1. Aktifkan scroll horizontal */
+    white-space: nowrap;  /* 2. Jaga tombol tetap 1 baris */
+    padding-bottom: 10px; /* 3. Beri jarak untuk scrollbar */
+}
+
+.filter-btn {
+    font-family: 'Poppins', sans-serif;
+    background: #f0f0f0;
+    border: 2px solid #e0e0e0;
+    border-radius: 20px;
+    padding: 8px 18px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #555;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+}
+
+.filter-btn.active,
+.filter-btn:hover {
+    background: #28a745;
+    /* Hijau */
+    color: #fff;
+    border-color: #28a745;
+}
+
+/* Grid Gejala */
+.symptom-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    /* 4 kolom */
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+/* Kartu Gejala */
+.symptom-card {
+    background: rgba(255, 255, 255, 0.7);
+    border: 2px solid #e0e0e0;
+    border-radius: 16px;
+    padding: 15px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    /* Untuk posisi checkmark */
+}
+
+.symptom-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.symptom-card .icon {
+    font-size: 2.5rem;
+    color: #333;
+}
+
+.symptom-card p {
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-top: 8px;
+    color: #333;
+}
+
+/* Checkmark di kartu */
+.symptom-card .checkmark {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    color: #28a745;
+    font-size: 1.5rem;
+    /* Sembunyikan checkmark secara default */
+    display: none;
+}
+
+/* Tampilan Kartu Saat Terpilih */
+.symptom-card.selected {
+    background: #e6f7ea;
+    /* Hijau muda */
+    border-color: #28a745;
+    /* Hijau tua */
+}
+
+.symptom-card.selected .checkmark {
+    /* Tampilkan checkmark saat kartu dipilih */
+    display: block;
+}
+
+/* Tombol Diagnosa */
+.diagnose-btn {
+    display: block;
+    width: 100%;
+    padding: 15px;
+    background: #28a745;
+    /* Hijau */
+    color: #fff;
+    border: none;
+    border-radius: 15px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.diagnose-btn:hover {
+    background: #218838;
+    /* Hijau lebih gelap */
+}
+
+/* Kartu Hasil */
+.result-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 25px;
+    margin-top: 20px;
+    border-top: 5px solid #ffc107;
+    /* Border oranye */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+
+    /* Sembunyikan kartu hasil secara default */
+    display: none;
+}
+
+.result-card.show {
+    /* Kelas ini akan ditambahkan oleh JavaScript */
+    display: block;
+}
+
+.result-card h3 {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.result-card .severity {
+    font-size: 0.9rem;
+    color: #555;
+    margin-bottom: 15px;
+}
+
+.result-card ul {
+    padding-left: 20px;
+    font-size: 0.9rem;
+    color: #444;
+}
+
+.result-card ul li {
+    margin-bottom: 8px;
+}
+
+
+/* Penyesuaian untuk Layar Kecil (HP) */
+@media (max-width: 768px) {
+    .symptom-grid {
+        grid-template-columns: repeat(3, 1fr);
+        /* 3 kolom di tablet */
+    }
+}
+
+@media (max-width: 480px) {
+    .diagnosis-card {
+        padding: 20px;
+    }
+
+    .symptom-grid {
+        grid-template-columns: repeat(2, 1fr);
+        /* 2 kolom di HP */
+    }
+
+    .filter-buttons {
+        padding-bottom: 10px;
+        /* Beri ruang agar bayangan scrollbar tidak terpotong */
+    }
+}
+
+.back-button {
+    position: absolute; /* Tetap di posisi tertentu di halaman */
+    top: 30px;          /* Jarak 30px dari atas */
+    left: 30px;         /* Jarak 30px dari kiri */
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    width: 44px;  /* Ukuran tombol */
+    height: 44px; /* Ukuran tombol */
+    
+    /* Gaya glassmorphism agar serasi */
+    background: rgba(255, 255, 255, 0.6); 
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    
+    border-radius: 50%; /* Membuatnya bulat */
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    
+    color: #333; /* Warna ikon panah */
+    text-decoration: none; /* Hapus garis bawah dari link */
+    transition: all 0.3s ease;
+}
+
+.back-button:hover {
+    background: rgba(255, 255, 255, 0.9); /* Sedikit lebih jelas saat disentuh */
+    transform: scale(1.05); /* Sedikit membesar */
+}
+
+.back-button .material-symbols-outlined {
+    font-size: 1.6rem; /* Ukuran ikon panah */
+}
+
+/* Penyesuaian untuk layar HP */
+@media (max-width: 480px) {
+    .back-button {
+        top: 20px;
+        left: 20px;
+    }
+}
+
+.symptom-item {
+    position: relative;
+}
+
+.symptom-item input {
+    display: none;
+}
+
+.symptom-grid > div {
+    display: contents;
+}
