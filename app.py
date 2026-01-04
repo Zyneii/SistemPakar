@@ -1,4 +1,8 @@
-import MySQLdb.cursors
+import pymysql
+pymysql.install_as_MySQLdb()
+
+import MySQLdb.cursors # Kode lama kamu lanjut di bawah sini...
+# ...
 from flask import (
     Flask, render_template, request, redirect,
     url_for, flash, session
