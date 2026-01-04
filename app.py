@@ -1,22 +1,42 @@
-import MySQLdb.cursors
+import pymysql
+pymysql.install_as_MySQLdb()
+
+# ======================================================
+# STANDARD & FLASK
+# ======================================================
+import os
+from functools import wraps
 from flask import (
     Flask, render_template, request, redirect,
     url_for, flash, session
 )
-from flask_mysqldb import MySQL
-from functools import wraps
 from flask_mail import Mail, Message
-import os
 from dotenv import load_dotenv
 
 load_dotenv()
 
+# ======================================================
+# INIT APP (HANYA SEKALI)
+# ======================================================
 app = Flask(__name__)
-app.secret_key = "aiSistemPakar"
-
+app.secret_key = os.getenv("SECRET_KEY", "aiSistemPakar")
 
 # ======================================================
-#  Dekorator LOGIN REQUIRED
+# DATABASE CONNECTION (PyMySQL)
+# ======================================================
+def get_db():
+    return pymysql.connect(
+        host=os.getenv("MYSQL_HOST"),
+        user=os.getenv("MYSQL_USER"),
+        password=os.getenv("MYSQL_PASSWORD"),
+        database=os.getenv("MYSQL_DB"),
+        port=int(os.getenv("MYSQL_PORT", 3306)),
+        cursorclass=pymysql.cursors.DictCursor,
+        autocommit=True
+    )
+
+# ======================================================
+# LOGIN REQUIRED DECORATOR
 # ======================================================
 def login_required(f):
     @wraps(f)
@@ -27,77 +47,148 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated
 
-
-
-import os
-
-app.config["MYSQL_HOST"] = os.getenv("MYSQL_HOST")
-app.config["MYSQL_USER"] = os.getenv("MYSQL_USER")
-app.config["MYSQL_PASSWORD"] = os.getenv("MYSQL_PASSWORD")
-app.config["MYSQL_DB"] = os.getenv("MYSQL_DB")
-app.config["MYSQL_PORT"] = int(os.getenv("MYSQL_PORT", 3306))
-
+# ======================================================
+# FLASK MAIL CONFIG
+# ======================================================
+app.config["MAIL_SERVER"] = "smtp.gmail.com"
+app.config["MAIL_PORT"] = 587
+app.config["MAIL_USE_TLS"] = True
+app.config["MAIL_USERNAME"] = os.getenv("MAIL_USER")
+app.config["MAIL_PASSWORD"] = os.getenv("MAIL_PASS")
+app.config["MAIL_DEFAULT_SENDER"] = os.getenv("MAIL_USER")
 
 mail = Mail(app)
 
 # ======================================================
-#  KONFIG APLIKASI & DATABASE
-# ======================================================
-
-
-app.config["MYSQL_HOST"] = "localhost"
-app.config["MYSQL_USER"] = "root"
-app.config["MYSQL_PASSWORD"] = ""
-app.config["MYSQL_DB"] = "web_sistempakar"
-
-mysql = MySQL(app)
-
-
-# ======================================================
-#  ROUTE: HALAMAN UTAMA
+# ROUTE: HOME & CONTACT
 # ======================================================
 @app.route("/")
 def home():
     return render_template("index.html")
 
-
-
-
 @app.route("/contact")
 def contact():
     return render_template("contact.html")
 
-
-@app.route('/send-contact', methods=['POST'])
+@app.route("/send-contact", methods=["POST"])
 def send_contact():
     try:
-        name = request.form['name']
-        email = request.form['email']
-        message = request.form['message']
+        name = request.form["name"]
+        email = request.form["email"]
+        message = request.form["message"]
 
         msg = Message(
             subject=f"Contact Baru dari {name}",
-            recipients=['emailtujuan@gmail.com'],
-            body=f"""
-Nama   : {name}
-Email  : {email}
-
-Pesan:
-{message}
-"""
+            recipients=[os.getenv("MAIL_USER")],
+            body=f"Nama: {name}\nEmail: {email}\n\nPesan:\n{message}"
         )
-
         mail.send(msg)
-        print("EMAIL BERHASIL DIKIRIM")  # 👈 PENTING
-
         flash("Pesan berhasil dikirim!", "success")
 
     except Exception as e:
-        print("ERROR EMAIL:", e)
+        print("EMAIL ERROR:", e)
         flash("Gagal mengirim pesan.", "danger")
 
-    return redirect(url_for('contact'))
+    return redirect(url_for("contact"))
 
+# ======================================================
+# LOGIN ADMIN
+# ======================================================
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        username = request.form["username"]
+        password_input = request.form["password"]
+
+        conn = get_db()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM admin WHERE username=%s", (username,))
+        admin = cursor.fetchone()
+        conn.close()
+
+        if not admin:
+            flash("Username tidak ditemukan!", "danger")
+            return render_template("login.html")
+
+        if admin["password"] != password_input:
+            flash("Password salah!", "danger")
+            return render_template("login.html")
+
+        session["admin_logged_in"] = True
+        session["admin_username"] = admin["username"]
+        flash("Berhasil login!", "success")
+        return redirect(url_for("admin"))
+
+    return render_template("login.html")
+
+# ======================================================
+# DASHBOARD & LOGOUT
+# ======================================================
+@app.route("/admin")
+@login_required
+def admin():
+    return render_template("dashboard_admin.html")
+
+@app.route("/logout")
+def logout():
+    session.clear()
+    flash("Berhasil logout", "info")
+    return redirect(url_for("login"))
+
+# ======================================================
+# HALAMAN DIAGNOSA
+# ======================================================
+@app.route("/diagnosa")
+def halaman_diagnosa():
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute("SELECT id_gejala, Nama_gejala, kategori FROM tb_gejala")
+    gejala = cursor.fetchall()
+    conn.close()
+
+    return render_template("diagnosa.html", daftar_gejala=gejala)
+
+# ======================================================
+# PROSES DIAGNOSA (FORWARD CHAINING)
+# ======================================================
+@app.route("/proses_diagnosa", methods=["POST"])
+def proses_diagnosa():
+    gejala_terpilih = request.form.getlist("gejala")
+
+    if not gejala_terpilih:
+        flash("Anda belum memilih gejala.", "warning")
+        return redirect(url_for("halaman_diagnosa"))
+
+    facts = set(gejala_terpilih)
+    hasil = []
+
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM tb_rules")
+    rules = cursor.fetchall()
+
+    for rule in rules:
+        antecedents = {x.strip() for x in rule["antecedents"].split(",")}
+        if antecedents.issubset(facts):
+            cursor.execute(
+                "SELECT * FROM tb_penyakit WHERE id_penyakit=%s",
+                (rule["consequent_penyakit"],)
+            )
+            penyakit = cursor.fetchone()
+            if penyakit:
+                hasil.append({
+                    "nama": penyakit["Nama_penyakit"],
+                    "solusi": (penyakit.get("solusi") or "").split("\n"),
+                    "rule": rule["antecedents"]
+                })
+
+    conn.close()
+
+    if not hasil:
+        flash("Tidak ditemukan penyakit yang cocok.", "info")
+        return redirect(url_for("halaman_diagnosa"))
+
+    return render_template("hasil.html", hasil=hasil)
 
 
 # ======================================================
