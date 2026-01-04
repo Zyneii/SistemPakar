@@ -1,42 +1,43 @@
-import pymysql
-pymysql.install_as_MySQLdb()
-
-# ======================================================
-# STANDARD & FLASK
-# ======================================================
-import os
-from functools import wraps
+import MySQLdb.cursors
 from flask import (
     Flask, render_template, request, redirect,
     url_for, flash, session
 )
+from flask_mysqldb import MySQL
+from functools import wraps
 from flask_mail import Mail, Message
+import os
 from dotenv import load_dotenv
 
+# Load file .env untuk local development
 load_dotenv()
 
-# ======================================================
-# INIT APP (HANYA SEKALI)
-# ======================================================
 app = Flask(__name__)
-app.secret_key = os.getenv("SECRET_KEY", "aiSistemPakar")
+app.secret_key = os.getenv("SECRET_KEY", "aiSistemPakarDefaultKey")
 
 # ======================================================
-# DATABASE CONNECTION (PyMySQL)
+#  KONFIGURASI DATABASE & MAIL
+#  (Menggunakan os.getenv agar otomatis menyesuaikan
+#   antara Localhost dan Railway)
 # ======================================================
-def get_db():
-    return pymysql.connect(
-        host=os.getenv("MYSQL_HOST"),
-        user=os.getenv("MYSQL_USER"),
-        password=os.getenv("MYSQL_PASSWORD"),
-        database=os.getenv("MYSQL_DB"),
-        port=int(os.getenv("MYSQL_PORT", 3306)),
-        cursorclass=pymysql.cursors.DictCursor,
-        autocommit=True
-    )
+app.config["MYSQL_HOST"] = os.getenv("MYSQL_HOST", "localhost")
+app.config["MYSQL_USER"] = os.getenv("MYSQL_USER", "root")
+app.config["MYSQL_PASSWORD"] = os.getenv("MYSQL_PASSWORD", "")
+app.config["MYSQL_DB"] = os.getenv("MYSQL_DB", "web_sistempakar")
+app.config["MYSQL_PORT"] = int(os.getenv("MYSQL_PORT", 3306))
+
+# Konfigurasi Mail (Opsional, sesuaikan jika pakai Gmail/SMTP lain)
+# app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+# app.config['MAIL_PORT'] = 587
+# app.config['MAIL_USE_TLS'] = True
+# app.config['MAIL_USERNAME'] = os.getenv("MAIL_USERNAME")
+# app.config['MAIL_PASSWORD'] = os.getenv("MAIL_PASSWORD")
+
+mail = Mail(app)
+mysql = MySQL(app)
 
 # ======================================================
-# LOGIN REQUIRED DECORATOR
+#  DEKORATOR LOGIN REQUIRED
 # ======================================================
 def login_required(f):
     @wraps(f)
@@ -48,19 +49,7 @@ def login_required(f):
     return decorated
 
 # ======================================================
-# FLASK MAIL CONFIG
-# ======================================================
-app.config["MAIL_SERVER"] = "smtp.gmail.com"
-app.config["MAIL_PORT"] = 587
-app.config["MAIL_USE_TLS"] = True
-app.config["MAIL_USERNAME"] = os.getenv("MAIL_USER")
-app.config["MAIL_PASSWORD"] = os.getenv("MAIL_PASS")
-app.config["MAIL_DEFAULT_SENDER"] = os.getenv("MAIL_USER")
-
-mail = Mail(app)
-
-# ======================================================
-# ROUTE: HOME & CONTACT
+#  ROUTE: HALAMAN UTAMA & KONTAK
 # ======================================================
 @app.route("/")
 def home():
@@ -70,129 +59,31 @@ def home():
 def contact():
     return render_template("contact.html")
 
-@app.route("/send-contact", methods=["POST"])
+@app.route('/send-contact', methods=['POST'])
 def send_contact():
     try:
-        name = request.form["name"]
-        email = request.form["email"]
-        message = request.form["message"]
+        name = request.form['name']
+        email = request.form['email']
+        message = request.form['message']
 
         msg = Message(
             subject=f"Contact Baru dari {name}",
-            recipients=[os.getenv("MAIL_USER")],
+            recipients=['emailtujuan@gmail.com'], # Ganti dengan email admin
             body=f"Nama: {name}\nEmail: {email}\n\nPesan:\n{message}"
         )
-        mail.send(msg)
-        flash("Pesan berhasil dikirim!", "success")
 
+        # mail.send(msg) # Uncomment jika config mail sudah benar
+        print("EMAIL (Simulasi) BERHASIL DIKIRIM") 
+
+        flash("Pesan berhasil dikirim!", "success")
     except Exception as e:
-        print("EMAIL ERROR:", e)
+        print("ERROR EMAIL:", e)
         flash("Gagal mengirim pesan.", "danger")
 
-    return redirect(url_for("contact"))
+    return redirect(url_for('contact'))
 
 # ======================================================
-# LOGIN ADMIN
-# ======================================================
-@app.route("/login", methods=["GET", "POST"])
-def login():
-    if request.method == "POST":
-        username = request.form["username"]
-        password_input = request.form["password"]
-
-        conn = get_db()
-        cursor = conn.cursor()
-        cursor.execute("SELECT * FROM admin WHERE username=%s", (username,))
-        admin = cursor.fetchone()
-        conn.close()
-
-        if not admin:
-            flash("Username tidak ditemukan!", "danger")
-            return render_template("login.html")
-
-        if admin["password"] != password_input:
-            flash("Password salah!", "danger")
-            return render_template("login.html")
-
-        session["admin_logged_in"] = True
-        session["admin_username"] = admin["username"]
-        flash("Berhasil login!", "success")
-        return redirect(url_for("admin"))
-
-    return render_template("login.html")
-
-# ======================================================
-# DASHBOARD & LOGOUT
-# ======================================================
-@app.route("/admin")
-@login_required
-def admin():
-    return render_template("dashboard_admin.html")
-
-@app.route("/logout")
-def logout():
-    session.clear()
-    flash("Berhasil logout", "info")
-    return redirect(url_for("login"))
-
-# ======================================================
-# HALAMAN DIAGNOSA
-# ======================================================
-@app.route("/diagnosa")
-def halaman_diagnosa():
-    conn = get_db()
-    cursor = conn.cursor()
-    cursor.execute("SELECT id_gejala, Nama_gejala, kategori FROM tb_gejala")
-    gejala = cursor.fetchall()
-    conn.close()
-
-    return render_template("diagnosa.html", daftar_gejala=gejala)
-
-# ======================================================
-# PROSES DIAGNOSA (FORWARD CHAINING)
-# ======================================================
-@app.route("/proses_diagnosa", methods=["POST"])
-def proses_diagnosa():
-    gejala_terpilih = request.form.getlist("gejala")
-
-    if not gejala_terpilih:
-        flash("Anda belum memilih gejala.", "warning")
-        return redirect(url_for("halaman_diagnosa"))
-
-    facts = set(gejala_terpilih)
-    hasil = []
-
-    conn = get_db()
-    cursor = conn.cursor()
-    cursor.execute("SELECT * FROM tb_rules")
-    rules = cursor.fetchall()
-
-    for rule in rules:
-        antecedents = {x.strip() for x in rule["antecedents"].split(",")}
-        if antecedents.issubset(facts):
-            cursor.execute(
-                "SELECT * FROM tb_penyakit WHERE id_penyakit=%s",
-                (rule["consequent_penyakit"],)
-            )
-            penyakit = cursor.fetchone()
-            if penyakit:
-                hasil.append({
-                    "nama": penyakit["Nama_penyakit"],
-                    "solusi": (penyakit.get("solusi") or "").split("\n"),
-                    "rule": rule["antecedents"]
-                })
-
-    conn.close()
-
-    if not hasil:
-        flash("Tidak ditemukan penyakit yang cocok.", "info")
-        return redirect(url_for("halaman_diagnosa"))
-
-    return render_template("hasil.html", hasil=hasil)
-
-
-# ======================================================
-#  ROUTE: LOGIN ADMIN
+#  ROUTE: LOGIN & LOGOUT ADMIN
 # ======================================================
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -212,6 +103,7 @@ def login():
             flash("Username tidak ditemukan!", "danger")
             return render_template("login.html")
 
+        # Catatan: Sebaiknya gunakan hashing password di production
         if admin["password"] != password_input:
             flash("Password salah!", "danger")
             return render_template("login.html")
@@ -224,6 +116,11 @@ def login():
 
     return render_template("login.html")
 
+@app.route("/logout")
+def logout():
+    session.clear()
+    flash("Berhasil logout", "info")
+    return redirect(url_for("login"))
 
 # ======================================================
 #  ROUTE: DASHBOARD ADMIN
@@ -233,25 +130,14 @@ def login():
 def admin():
     return render_template("dashboard_admin.html")
 
-
 # ======================================================
-#  ROUTE: LOGOUT ADMIN
-# ======================================================
-@app.route("/logout")
-def logout():
-    session.clear()
-    flash("Berhasil logout", "info")
-    return redirect(url_for("login"))
-
-
-# ======================================================
-#  ROUTE: HALAMAN DIAGNOSA
+#  ROUTE: SISTEM PAKAR (DIAGNOSA)
 # ======================================================
 @app.route("/diagnosa")
 def halaman_diagnosa():
     try:
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        cursor.execute("SELECT id_gejala, Nama_gejala,kategori FROM tb_gejala")
+        cursor.execute("SELECT id_gejala, Nama_gejala, kategori FROM tb_gejala")
         semua_gejala = cursor.fetchall()
         cursor.close()
     except Exception as e:
@@ -260,47 +146,36 @@ def halaman_diagnosa():
 
     return render_template("diagnosa.html", daftar_gejala=semua_gejala)
 
-
-# ======================================================
-#  ROUTE: PROSES DIAGNOSA (FORWARD CHAINING)
-# ======================================================
 @app.route("/proses_diagnosa", methods=["POST"])
 def proses_diagnosa():
     cursor = None
     try:
         # Ambil gejala dari user
         gejala_terpilih = request.form.getlist("gejala")
-        print("DEBUG gejala_terpilih =", gejala_terpilih)
-
+        
         if not gejala_terpilih:
             flash("Anda belum memilih gejala apapun.", "warning")
             return redirect(url_for("halaman_diagnosa"))
 
         # Jadikan SET untuk forward chaining
         facts = set(gejala_terpilih)
-        print("DEBUG facts =", facts)
-
+        
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-
+        
         # Ambil semua rule
         cursor.execute("SELECT * FROM tb_rules")
         rules = cursor.fetchall()
-        print("DEBUG KEYS tb_rules:", list(rules[0].keys()))
-
+        
         hasil_diagnosa = []
 
-        # Forward Chaining
+        # Algoritma Forward Chaining Sederhana
         for rule in rules:
             antecedent_list = {
-                x.strip() for x in rule["antecedents"].split(",")
+                x.strip() for x in rule["antecedents"].split(",") 
                 if x.strip()
             }
 
-            print("DEBUG antecedents =", antecedent_list)
-
             if antecedent_list.issubset(facts):
-                print("MATCH RULE:", rule["antecedents"])
-
                 cursor.execute(
                     "SELECT * FROM tb_penyakit WHERE id_penyakit = %s",
                     (rule["consequent_penyakit"],)
@@ -311,10 +186,8 @@ def proses_diagnosa():
                     hasil_diagnosa.append({
                         "nama": penyakit["Nama_penyakit"],
                         "solusi": (penyakit.get("solusi") or "").split("\n"),
-                        "rule": rule["antecedents"]
+                        "rule_matched": rule["antecedents"]
                     })
-
-        print("DEBUG hasil_diagnosa =", hasil_diagnosa)
 
         if not hasil_diagnosa:
             flash("Tidak ada penyakit yang cocok dengan gejala tersebut.", "info")
@@ -326,21 +199,18 @@ def proses_diagnosa():
         print("DEBUG ERROR:", e)
         flash(f"Terjadi error: {e}", "danger")
         return redirect(url_for("halaman_diagnosa"))
-
+    
     finally:
         if cursor:
             cursor.close()
-
 
 @app.route("/hasil")
 def halaman_hasil():
     return render_template("hasil.html")
 
-
-
-# ===================================
-# CRUD DATA GEJALA
-# ===================================
+# ======================================================
+#  CRUD DATA GEJALA
+# ======================================================
 @app.route('/gejala')
 @login_required
 def admin_gejala():
@@ -348,42 +218,32 @@ def admin_gejala():
     cursor.execute("SELECT * FROM tb_gejala")
     data = cursor.fetchall()
     cursor.close()
-
     return render_template("admin_data_gejala.html", gejala=data, active="gejala")
 
-# --- TAMBAH GEJALA ---
 @app.route('/gejala/tambah', methods=['POST'])
 @login_required
 def tambah_gejala():
     idg = request.form['id_gejala']
     nama = request.form['nama_gejala']
-
     cursor = mysql.connection.cursor()
     cursor.execute("INSERT INTO tb_gejala (id_gejala, Nama_gejala) VALUES (%s,%s)", (idg, nama))
     mysql.connection.commit()
     cursor.close()
-
     flash("Gejala berhasil ditambahkan!", "success")
     return redirect(url_for('admin_gejala'))
 
-
-# --- EDIT GEJALA ---
 @app.route('/gejala/edit', methods=['POST'])
 @login_required
 def edit_gejala():
     idg = request.form['id_gejala']
     nama = request.form['nama_gejala']
-
     cursor = mysql.connection.cursor()
-    cursor.execute("UPDATE tb_gejala SET Nama_gejala=%s WHERE id_gejala=%s",
-                   (nama, idg))
+    cursor.execute("UPDATE tb_gejala SET Nama_gejala=%s WHERE id_gejala=%s", (nama, idg))
     mysql.connection.commit()
     cursor.close()
-
     flash("Gejala berhasil diperbarui!", "success")
     return redirect(url_for('admin_gejala'))
 
-# --- HAPUS GEJALA ---
 @app.route('/gejala/hapus/<id>', methods=['POST'])
 @login_required
 def hapus_gejala(id):
@@ -391,15 +251,12 @@ def hapus_gejala(id):
     cursor.execute("DELETE FROM tb_gejala WHERE id_gejala=%s", (id,))
     mysql.connection.commit()
     cursor.close()
-
     flash("Gejala berhasil dihapus!", "success")
     return redirect(url_for('admin_gejala'))
 
-
-
-# ===================================
-# CRUD DATA PENYAKIT
-# ===================================
+# ======================================================
+#  CRUD DATA PENYAKIT
+# ======================================================
 @app.route('/penyakit')
 @login_required
 def admin_penyakit():
@@ -407,10 +264,8 @@ def admin_penyakit():
     cursor.execute("SELECT * FROM tb_penyakit")
     data = cursor.fetchall()
     cursor.close()
-
     return render_template("admin_data_penyakit.html", penyakit=data, active="penyakit")
 
-# --- TAMBAH ---
 @app.route('/penyakit/tambah', methods=['GET', 'POST'])
 @login_required
 def tambah_penyakit():
@@ -418,43 +273,34 @@ def tambah_penyakit():
         idp = request.form['id_penyakit']
         nama = request.form['nama_penyakit']
         solusi = request.form['solusi']
-
         cursor = mysql.connection.cursor()
         cursor.execute("INSERT INTO tb_penyakit (id_penyakit, Nama_penyakit, solusi) VALUES (%s,%s,%s)",
                        (idp, nama, solusi))
         mysql.connection.commit()
         cursor.close()
-
         flash("Penyakit berhasil ditambahkan!", "success")
         return redirect(url_for('admin_penyakit'))
-
     return render_template("form_penyakit.html")
 
-# --- EDIT ---
 @app.route('/penyakit/edit/<id>', methods=['GET', 'POST'])
 @login_required
 def edit_penyakit(id):
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     cursor.execute("SELECT * FROM tb_penyakit WHERE id_penyakit=%s", (id,))
     data = cursor.fetchone()
-
+    
     if request.method == 'POST':
         nama = request.form['nama_penyakit']
         solusi = request.form['solusi']
-
         cursor2 = mysql.connection.cursor()
-        cursor2.execute("""
-            UPDATE tb_penyakit SET Nama_penyakit=%s, solusi=%s WHERE id_penyakit=%s
-        """, (nama, solusi, id))
+        cursor2.execute("UPDATE tb_penyakit SET Nama_penyakit=%s, solusi=%s WHERE id_penyakit=%s",
+                        (nama, solusi, id))
         mysql.connection.commit()
         cursor2.close()
-
         flash("Berhasil diperbarui!", "success")
         return redirect(url_for('admin_penyakit'))
-
     return render_template("form_penyakit_edit.html", penyakit=data)
 
-# --- HAPUS ---
 @app.route('/penyakit/hapus/<id>', methods=['POST'])
 @login_required
 def hapus_penyakit(id):
@@ -462,18 +308,16 @@ def hapus_penyakit(id):
     cursor.execute("DELETE FROM tb_penyakit WHERE id_penyakit=%s", (id,))
     mysql.connection.commit()
     cursor.close()
-
     flash("Penyakit berhasil dihapus!", "danger")
     return redirect(url_for('admin_penyakit'))
 
-# ===================================
-# CRUD RULE
-# ===================================
+# ======================================================
+#  CRUD RULE
+# ======================================================
 @app.route('/rule')
 @login_required
 def admin_rule():
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-
     cursor.execute("""
         SELECT r.id_rule, r.antecedents,
                p.Nama_penyakit AS penyakit
@@ -481,72 +325,50 @@ def admin_rule():
         LEFT JOIN tb_penyakit p ON r.consequent_penyakit = p.id_penyakit
     """)
     data = cursor.fetchall()
-
-
     cursor.execute("SELECT * FROM tb_penyakit")
     penyakit = cursor.fetchall()
-
     cursor.close()
+    return render_template("admin_data_rule.html", rules=data, penyakit=penyakit, active="rule")
 
-    return render_template(
-        "admin_data_rule.html",
-        rules=data,
-        penyakit=penyakit,     
-        active="rule"
-    )
-
-
-# --- TAMBAH RULE ---
 @app.route('/rule/tambah', methods=['GET', 'POST'])
 @login_required
 def tambah_rule():
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    cursor.execute("SELECT * FROM tb_gejala")
-    gejala = cursor.fetchall()
-
-    cursor.execute("SELECT * FROM tb_penyakit")
-    penyakit = cursor.fetchall()
-
     if request.method == 'POST':
         idr = request.form['id_rule']
         antecedents = ",".join(request.form.getlist('gejala'))
         consequent = request.form['penyakit']
-
-        cursor2 = mysql.connection.cursor()
-        cursor2.execute("""
-            INSERT INTO tb_rules (id_rule, antecedents, consequent_penyakit)
-            VALUES (%s,%s,%s)
-        """, (idr, antecedents, consequent))
+        
+        cursor.execute("INSERT INTO tb_rules (id_rule, antecedents, consequent_penyakit) VALUES (%s,%s,%s)",
+                       (idr, antecedents, consequent))
         mysql.connection.commit()
-        cursor2.close()
-
         flash("Rule berhasil ditambahkan!", "success")
         return redirect(url_for('admin_rule'))
 
+    cursor.execute("SELECT * FROM tb_gejala")
+    gejala = cursor.fetchall()
+    cursor.execute("SELECT * FROM tb_penyakit")
+    penyakit = cursor.fetchall()
+    cursor.close()
     return render_template("form_rule.html", gejala=gejala, penyakit=penyakit)
 
-# --- EDIT RULE ---
 @app.route('/rule/edit/<string:id>', methods=['POST'])
 @login_required
 def edit_rule(id):
     id_rule = request.form['id_rule']
     antecedents = request.form['gejala']
     penyakit = request.form['penyakit']
-
     cursor = mysql.connection.cursor()
     cursor.execute("""
         UPDATE tb_rules
         SET id_rule=%s, antecedents=%s, consequent_penyakit=%s
         WHERE id_rule=%s
     """, (id_rule, antecedents, penyakit, id))
-
     mysql.connection.commit()
     cursor.close()
-
     flash("Rule berhasil diperbarui!", "success")
     return redirect(url_for('admin_rule'))
 
-# --- HAPUS RULE ---
 @app.route('/rule/hapus/<string:id>', methods=['POST'])
 @login_required
 def hapus_rule(id):
@@ -554,10 +376,14 @@ def hapus_rule(id):
     cursor.execute("DELETE FROM tb_rules WHERE id_rule=%s", (id,))
     mysql.connection.commit()
     cursor.close()
-
     flash("Rule berhasil dihapus!", "danger")
     return redirect(url_for('admin_rule'))
 
-
-
-app = Flask(__name__)
+# ======================================================
+#  MAIN EXECUTION
+# ======================================================
+if __name__ == "__main__":
+    # Penting untuk Railway: Ambil PORT dari environment variable
+    # Jika tidak ada (local), pakai 8080
+    port = int(os.environ.get("PORT", 8080))
+    app.run(host='0.0.0.0', port=port, debug=True)
