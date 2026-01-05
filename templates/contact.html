@@ -246,6 +246,85 @@
             text-align: center;
             max-width: 300px;
         }
+
+        /* ========================================= */
+        /* RESPONSIVE MOBILE    */
+        /* ========================================= */
+        @media (max-width: 768px) {
+            
+            .navbar {
+                flex-direction: column;
+                padding: 15px 20px;
+                gap: 15px;
+            }
+
+            .nav-links {
+                margin-left: 0;
+                border-left: none; 
+                padding-left: 0;
+                width: 100%;
+                justify-content: center;
+                gap: 20px;
+            }
+
+            .contact-wrapper {
+                flex-direction: column;
+                padding: 30px 20px;
+                margin: 20px auto;
+                width: 90%;
+                border-radius: 15px;
+            }
+            
+
+            .contact-wrapper::before,
+            .contact-wrapper::after {
+                display: none;
+            }
+
+            .form-section, 
+            .info-card {
+                width: 100%;
+            }
+
+            .form-section h2 {
+                font-size: 24px;
+            }
+
+          
+            .form-group {
+                margin-bottom: 40px; 
+            }
+
+            .info-card {
+                margin-top: 20px;
+                padding: 30px;
+            }
+
+            .leaf-1 {
+                top: 130px; 
+                left: 360px; 
+                right: auto; 
+                width: 70px; 
+                transform: rotate(5deg);
+            }
+
+        
+            .leaf-2 {
+                bottom: 140px;
+                left: -20px;
+                width: 100px; 
+                transform: rotate(-30deg);
+            }
+
+            .leaf-3 {
+                bottom: 20px;
+                right: -15px;
+                left: auto; 
+                width: 80px; 
+                transform: rotate(45deg);
+            }
+
+        }
     </style>
 </head>
 
@@ -276,7 +355,7 @@
         <form action="{{ url_for('send_contact') }}" method="POST">
             <h2>Contact Us</h2>
             <p>Jangan ragu untuk menghubungi kami kapan pun Anda membutuhkan bantuan.</p>
-
+            <br>
             <div class="form-group">
                 <input type="text" name="name" placeholder="Name" required>
             </div>
