@@ -1,8 +1,7 @@
 import pymysql
 pymysql.install_as_MySQLdb()
 
-import MySQLdb.cursors # Kode lama kamu lanjut di bawah sini...
-# ...
+import MySQLdb.cursors 
 from flask import (
     Flask, render_template, request, redirect,
     url_for, flash, session
@@ -13,29 +12,20 @@ from flask_mail import Mail, Message
 import os
 from dotenv import load_dotenv
 
-# Load file .env untuk local development
+
 load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY", "aiSistemPakarDefaultKey")
 
-# ======================================================
-#  KONFIGURASI DATABASE & MAIL
-#  (Menggunakan os.getenv agar otomatis menyesuaikan
-#   antara Localhost dan Railway)
-# ======================================================
+
 app.config["MYSQL_HOST"] = os.getenv("MYSQL_HOST", "localhost")
 app.config["MYSQL_USER"] = os.getenv("MYSQL_USER", "root")
 app.config["MYSQL_PASSWORD"] = os.getenv("MYSQL_PASSWORD", "")
 app.config["MYSQL_DB"] = os.getenv("MYSQL_DB", "web_sistempakar")
 app.config["MYSQL_PORT"] = int(os.getenv("MYSQL_PORT", 3306))
 
-# Konfigurasi Mail (Opsional, sesuaikan jika pakai Gmail/SMTP lain)
-# app.config['MAIL_SERVER'] = 'smtp.gmail.com'
-# app.config['MAIL_PORT'] = 587
-# app.config['MAIL_USE_TLS'] = True
-# app.config['MAIL_USERNAME'] = os.getenv("MAIL_USERNAME")
-# app.config['MAIL_PASSWORD'] = os.getenv("MAIL_PASSWORD")
+
 
 mail = Mail(app)
 mysql = MySQL(app)
@@ -72,11 +62,11 @@ def send_contact():
 
         msg = Message(
             subject=f"Contact Baru dari {name}",
-            recipients=['emailtujuan@gmail.com'], # Ganti dengan email admin
+            recipients=['emailtujuan@gmail.com'], 
             body=f"Nama: {name}\nEmail: {email}\n\nPesan:\n{message}"
         )
 
-        # mail.send(msg) # Uncomment jika config mail sudah benar
+       
         print("EMAIL (Simulasi) BERHASIL DIKIRIM") 
 
         flash("Pesan berhasil dikirim!", "success")
@@ -107,12 +97,12 @@ def login():
             flash("Username tidak ditemukan!", "danger")
             return render_template("login.html")
 
-        # Catatan: Sebaiknya gunakan hashing password di production
+       
         if admin["password"] != password_input:
             flash("Password salah!", "danger")
             return render_template("login.html")
 
-        # Login berhasil
+
         session["admin_logged_in"] = True
         session["admin_username"] = admin["username"]
         flash("Berhasil login!", "success")
@@ -161,18 +151,18 @@ def proses_diagnosa():
             flash("Anda belum memilih gejala apapun.", "warning")
             return redirect(url_for("halaman_diagnosa"))
 
-        # Jadikan SET untuk forward chaining
+        
         facts = set(gejala_terpilih)
         
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
         
-        # Ambil semua rule
+ 
         cursor.execute("SELECT * FROM tb_rules")
         rules = cursor.fetchall()
         
         hasil_diagnosa = []
 
-        # Algoritma Forward Chaining Sederhana
+
         for rule in rules:
             antecedent_list = {
                 x.strip() for x in rule["antecedents"].split(",") 
@@ -387,7 +377,6 @@ def hapus_rule(id):
 #  MAIN EXECUTION
 # ======================================================
 if __name__ == "__main__":
-    # Penting untuk Railway: Ambil PORT dari environment variable
-    # Jika tidak ada (local), pakai 8080
+  
     port = int(os.environ.get("PORT", 8080))
     app.run(host='0.0.0.0', port=port, debug=True)
