@@ -25,6 +25,12 @@ app.config["MYSQL_PASSWORD"] = os.getenv("MYSQL_PASSWORD", "vsArsDNjQCWZQMVhEcik
 app.config["MYSQL_DB"] = os.getenv("MYSQL_DB", "railway")
 app.config["MYSQL_PORT"] = int(os.getenv("MYSQL_PORT", 28811))
 
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 465
+app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME') # <--- Harus begini
+app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD') 
+app.config['MAIL_USE_SSL'] = True
+app.config['MAIL_USE_TLS'] = False
 
 
 mail = Mail(app)
