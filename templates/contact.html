@@ -359,28 +359,39 @@
 
     </div>
 
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const popup = document.getElementById("popup");
-        const popupMessage = document.getElementById("popup-message");
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Ambil elemen popup
+            const popup = document.getElementById("popup");
+            const popupMessage = document.getElementById("popup-message");
 
-        // 1. Cek apakah di Link Browser ada tulisan '?success=true'
-        const urlParams = new URLSearchParams(window.location.search);
-        const isSuccess = urlParams.get('success');
+            // 1. CEK URL BROWSER (Ini bagian yang kemarin belum ada/belum jalan)
+            // Kita cari apakah ada tulisan "?success=true" di link atas
+            const urlParams = new URLSearchParams(window.location.search);
+            const isSuccess = urlParams.get('success');
 
-        // 2. Jika ada, berarti pesan baru saja terkirim
-        if (isSuccess === 'true') {
-            popupMessage.innerText = "Pesan berhasil dikirim! Terima kasih.";
-            popup.style.display = "flex";
+            // 2. JIKA ADA TANDA SUKSES
+            if (isSuccess === 'true') {
+                // Tampilkan pesan sukses di popup
+                if (popupMessage) popupMessage.innerText = "Pesan berhasil dikirim! Terima kasih.";
+                if (popup) popup.style.display = "flex";
 
-            // 3. Hapus tulisan '?success=true' dari link biar bersih
-            window.history.replaceState({}, document.title, window.location.pathname);
+                // Bersihkan URL (Hapus ?success=true) agar rapi kembali
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+
+            // 3. (Jaga-jaga) Jika masih ada sisa pesan dari Python/Flash
+            const msgFlask = popup.dataset.message;
+            if (msgFlask && msgFlask !== "[]" && msgFlask !== "") {
+                if (popupMessage) popupMessage.innerText = msgFlask;
+                if (popup) popup.style.display = "flex";
+            }
+        });
+
+        function closePopup() {
+            const popup = document.getElementById("popup");
+            if (popup) popup.style.display = "none";
         }
-    });
-
-    function closePopup() {
-        document.getElementById("popup").style.display = "none";
-    }
     </script>
 </body>
 
