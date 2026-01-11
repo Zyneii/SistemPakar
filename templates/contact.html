@@ -359,40 +359,48 @@
 
     </div>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            // Ambil elemen popup
-            const popup = document.getElementById("popup");
-            const popupMessage = document.getElementById("popup-message");
+  <script>
+    // Tunggu sampai halaman selesai dimuat sepenuhnya
+    window.onload = function() {
+        
+        // 1. Tes apakah Script jalan?
+        // Kalau kotak ini TIDAK muncul saat refresh, berarti script kamu error total / tidak terpanggil
+        // alert("Tes Script: Aktif!"); 
 
-            // 1. CEK URL BROWSER (Ini bagian yang kemarin belum ada/belum jalan)
-            // Kita cari apakah ada tulisan "?success=true" di link atas
-            const urlParams = new URLSearchParams(window.location.search);
-            const isSuccess = urlParams.get('success');
+        // 2. Ambil elemen popup
+        const popup = document.getElementById("popup");
+        const popupMessage = document.getElementById("popup-message");
 
-            // 2. JIKA ADA TANDA SUKSES
-            if (isSuccess === 'true') {
-                // Tampilkan pesan sukses di popup
-                if (popupMessage) popupMessage.innerText = "Pesan berhasil dikirim! Terima kasih.";
-                if (popup) popup.style.display = "flex";
-
-                // Bersihkan URL (Hapus ?success=true) agar rapi kembali
-                window.history.replaceState({}, document.title, window.location.pathname);
-            }
-
-            // 3. (Jaga-jaga) Jika masih ada sisa pesan dari Python/Flash
-            const msgFlask = popup.dataset.message;
-            if (msgFlask && msgFlask !== "[]" && msgFlask !== "") {
-                if (popupMessage) popupMessage.innerText = msgFlask;
-                if (popup) popup.style.display = "flex";
-            }
-        });
-
-        function closePopup() {
-            const popup = document.getElementById("popup");
-            if (popup) popup.style.display = "none";
+        // Cek apakah elemen ditemukan?
+        if (!popup || !popupMessage) {
+            alert("GAWAT! Elemen ID 'popup' tidak ditemukan di HTML.");
+            return;
         }
-    </script>
+
+        // 3. Baca URL Browser
+        const urlParams = new URLSearchParams(window.location.search);
+        const isSuccess = urlParams.get('success');
+
+        // 4. Logika Utama
+        if (isSuccess === 'true') {
+            // Paksa munculkan Alert Browser (Pasti Kelihatan)
+            alert("PESAN SUKSES DITERIMA! Klik OK untuk lihat Popup.");
+            
+            // Munculkan Popup HTML
+            popupMessage.innerText = "Pesan berhasil dikirim! Terima kasih.";
+            popup.style.display = "flex"; // Pastikan CSS .popup punya display: none awalnya
+
+            // Bersihkan URL
+            window.history.replaceState({}, document.title, window.location.pathname);
+        } else {
+            console.log("Tidak ada tanda success=true di URL.");
+        }
+    };
+
+    function closePopup() {
+        document.getElementById("popup").style.display = "none";
+    }
+</script>
 </body>
 
 </html>
