@@ -21,7 +21,9 @@
     </a>
 
     
-            {% with messages = get_flashed_messages(with_categories=true) %}
+           
+    <div class="container">
+         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
             <div class="notification-area">
                 {% for category, message in messages %}
@@ -36,7 +38,6 @@
             </div>
             {% endif %}
             {% endwith %}
-    <div class="container">
 
         <div class="steps">
             <div class="step active">
