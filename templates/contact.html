@@ -319,7 +319,7 @@
 
             <input type="hidden" name="_subject" value="Pesan Baru dari Website HydroSmart">
 
-            <input type="hidden" name="_next" value="{{ url_for('contact', _external=True) }}?success=true">
+            <input type="hidden" name="_next" value="https://hydrosmart.up.railway.app/contact?success=true">
 
             <input type="hidden" name="_captcha" value="false">
 
@@ -359,33 +359,30 @@
 
     </div>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const popup = document.getElementById("popup");
-            const popupMessage = document.getElementById("popup-message");
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Ambil elemen popup
+        const popup = document.getElementById("popup");
+        const popupMessage = document.getElementById("popup-message");
 
+        // 1. Cek Link URL di atas browser (Cari tulisan ?success=true)
+        const urlParams = new URLSearchParams(window.location.search);
+        const statusSukses = urlParams.get('success');
 
-            const msgFlask = popup.dataset.message;
+        // 2. Jika ketemu tulisan 'true', munculkan popup
+        if (statusSukses === 'true') {
+            popupMessage.innerText = "Pesan berhasil dikirim! Terima kasih.";
+            popup.style.display = "flex";
 
-            const urlParams = new URLSearchParams(window.location.search);
-            const isSuccess = urlParams.get('success');
-
-            if (msgFlask) {
-                popupMessage.innerText = msgFlask;
-                popup.style.display = "flex";
-            }
-            else if (isSuccess === 'true') {
-                popupMessage.innerText = "Pesan berhasil dikirim! Terima kasih.";
-                popup.style.display = "flex";
-
-                window.history.replaceState({}, document.title, window.location.pathname);
-            }
-        });
-
-        function closePopup() {
-            document.getElementById("popup").style.display = "none";
+            // 3. Bersihkan Link URL biar rapi kembali (Hapus ?success=true)
+            window.history.replaceState({}, document.title, window.location.pathname);
         }
-    </script>
+    });
+
+    function closePopup() {
+        document.getElementById("popup").style.display = "none";
+    }
+</script>
 </body>
 
 </html>
