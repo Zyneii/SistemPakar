@@ -24,7 +24,7 @@
 
             <div class="profile">
                 <span class="material-icons-outlined profile-user-icon">person</span>
-                <img src="{{ url_for('static', filename='img/Daun.png') }}" alt="Daun" class="card-leaf-decoration2">
+                <img src="{{ url_for('static', filename='img/daun.png') }}" alt="Daun" class="card-leaf-decoration2">
             </div>
         </div>
     </header>
@@ -35,13 +35,11 @@
         <!-- SIDEBAR -->
         <nav class="sidebar">
             <ul>
-                  <!--
                 <li>
                     <a href="{{ url_for('admin') }}" class="{% if active=='dashboard' %}active{% endif %}">
                         <span class="material-icons-outlined">dashboard</span> Dashboard
                     </a>
                 </li>
-                    -->
                 
                 <li>
                     <a href="{{ url_for('admin_gejala') }}" class="{% if active=='gejala' %}active{% endif %}">

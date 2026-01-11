@@ -55,6 +55,22 @@
                 <button class="filter-btn" data-filter="tanaman">Tanaman</button>
             </div>
 
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <div class="notification-area">
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">
+                    <span class="material-symbols-outlined">
+                        {% if category == 'danger' or category == 'warning' %} error
+                        {% else %} info {% endif %}
+                    </span>
+                    <span>{{ message }}</span>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% endwith %}
+
             <!-- ===================== FORM GEJALA ===================== -->
             <form action="{{ url_for('proses_diagnosa') }}" method="POST">
 
@@ -66,7 +82,7 @@
                             id="gejala_{{ gejala['id_gejala'] }}" class="symptom-checkbox">
 
                         <label for="gejala_{{ gejala['id_gejala'] }}" class="symptom-card">
-                           <span class="material-symbols-outlined icon">spa</span>
+                            <span class="material-symbols-outlined icon">spa</span>
 
 
                             <p class="symptom-name">{{ gejala['Nama_gejala'] }}</p>
