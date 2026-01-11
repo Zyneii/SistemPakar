@@ -68,19 +68,20 @@ def send_contact():
 
         msg = Message(
             subject=f"Contact Baru dari {name}",
-            recipients=['emailtujuan@gmail.com'], 
+            recipients=['kise27805@gmail.com'], 
             body=f"Nama: {name}\nEmail: {email}\n\nPesan:\n{message}"
         )
 
-       
-        print("EMAIL (Simulasi) BERHASIL DIKIRIM") 
+        mail.send(msg) 
+
+        print("EMAIL BENAR-BENAR TERKIRIM") 
 
         flash("Pesan berhasil dikirim!", "success")
     except Exception as e:
         print("ERROR EMAIL:", e)
         flash("Gagal mengirim pesan.", "danger")
 
-    return redirect(url_for('contact'))
+    return redirect(url_for('contact')) 
 
 # ======================================================
 #  ROUTE: LOGIN & LOGOUT ADMIN
