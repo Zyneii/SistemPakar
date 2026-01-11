@@ -26,11 +26,17 @@ app.config["MYSQL_DB"] = os.getenv("MYSQL_DB", "railway")
 app.config["MYSQL_PORT"] = int(os.getenv("MYSQL_PORT", 28811))
 
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
-app.config['MAIL_PORT'] = 465
+app.config['MAIL_PORT'] = 587  # Ganti jadi 587
+app.config['MAIL_USE_TLS'] = True  # TLS Hidup
+app.config['MAIL_USE_SSL'] = False # SSL Mati
 app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME') # <--- Harus begini
 app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD') 
-app.config['MAIL_USE_SSL'] = True
-app.config['MAIL_USE_TLS'] = False
+
+print("--- CEK DEBUG EMAIL ---")
+print("Server:", app.config['MAIL_SERVER'])
+print("Username:", app.config['MAIL_USERNAME'])
+print("Password Terisi?:", "YA" if app.config['MAIL_PASSWORD'] else "TIDAK (KOSONG!)")
+
 
 
 mail = Mail(app)
@@ -81,7 +87,7 @@ def send_contact():
         print("ERROR EMAIL:", e)
         flash("Gagal mengirim pesan.", "danger")
 
-    return redirect(url_for('contact')) 
+    return redirect(url_for('contact')) # Pastikan nama fungsi routenya 'contact' (bukan halaman_contact, sesuaikan dgn kodemu)
 
 # ======================================================
 #  ROUTE: LOGIN & LOGOUT ADMIN
