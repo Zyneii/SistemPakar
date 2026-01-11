@@ -25,12 +25,6 @@ app.config["MYSQL_PASSWORD"] = os.getenv("MYSQL_PASSWORD", "vsArsDNjQCWZQMVhEcik
 app.config["MYSQL_DB"] = os.getenv("MYSQL_DB", "railway")
 app.config["MYSQL_PORT"] = int(os.getenv("MYSQL_PORT", 28811))
 
-app.config['MAIL_SERVER'] = 'smtp.gmail.com'
-app.config['MAIL_PORT'] = 587  # Ganti jadi 587
-app.config['MAIL_USE_TLS'] = True  # TLS Hidup
-app.config['MAIL_USE_SSL'] = False # SSL Mati
-app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME') # <--- Harus begini
-app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD') 
 
 print("--- CEK DEBUG EMAIL ---")
 print("Server:", app.config['MAIL_SERVER'])
@@ -65,29 +59,6 @@ def home():
 def contact():
     return render_template("contact.html")
 
-@app.route('/send-contact', methods=['POST'])
-def send_contact():
-    try:
-        name = request.form['name']
-        email = request.form['email']
-        message = request.form['message']
-
-        msg = Message(
-            subject=f"Contact Baru dari {name}",
-            recipients=['kise27805@gmail.com'], 
-            body=f"Nama: {name}\nEmail: {email}\n\nPesan:\n{message}"
-        )
-
-        mail.send(msg) 
-
-        print("EMAIL BENAR-BENAR TERKIRIM") 
-
-        flash("Pesan berhasil dikirim!", "success")
-    except Exception as e:
-        print("ERROR EMAIL:", e)
-        flash("Gagal mengirim pesan.", "danger")
-
-    return redirect(url_for('contact')) # Pastikan nama fungsi routenya 'contact' (bukan halaman_contact, sesuaikan dgn kodemu)
 
 # ======================================================
 #  ROUTE: LOGIN & LOGOUT ADMIN
