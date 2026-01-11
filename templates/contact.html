@@ -316,11 +316,11 @@
     <div class="contact-wrapper">
 
         <form action="https://formsubmit.co/kise27805@gmail.com" method="POST" class="form-section">
-            
-            <input type="hidden" name="_subject" value="Pesan Baru dari Website Diagnosa Tanaman">
-            
-            <input type="hidden" name="_next" value="{{ url_for('contact', _external=True) }}">
-            
+
+            <input type="hidden" name="_subject" value="Pesan Baru dari Website HydroSmart">
+
+            <input type="hidden" name="_next" value="{{ url_for('contact', _external=True) }}?success=true">
+
             <input type="hidden" name="_captcha" value="false">
 
             <h2>Contact Us</h2>
@@ -359,5 +359,33 @@
 
     </div>
 
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const popup = document.getElementById("popup");
+            const popupMessage = document.getElementById("popup-message");
+
+
+            const msgFlask = popup.dataset.message;
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const isSuccess = urlParams.get('success');
+
+            if (msgFlask) {
+                popupMessage.innerText = msgFlask;
+                popup.style.display = "flex";
+            }
+            else if (isSuccess === 'true') {
+                popupMessage.innerText = "Pesan berhasil dikirim! Terima kasih.";
+                popup.style.display = "flex";
+
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+        });
+
+        function closePopup() {
+            document.getElementById("popup").style.display = "none";
+        }
+    </script>
 </body>
+
 </html>
