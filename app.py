@@ -26,10 +26,6 @@ app.config["MYSQL_DB"] = os.getenv("MYSQL_DB", "railway")
 app.config["MYSQL_PORT"] = int(os.getenv("MYSQL_PORT", 28811))
 
 
-print("--- CEK DEBUG EMAIL ---")
-print("Server:", app.config['MAIL_SERVER'])
-print("Username:", app.config['MAIL_USERNAME'])
-print("Password Terisi?:", "YA" if app.config['MAIL_PASSWORD'] else "TIDAK (KOSONG!)")
 
 
 
