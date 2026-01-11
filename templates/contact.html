@@ -361,20 +361,19 @@
 
   <script>
     document.addEventListener("DOMContentLoaded", function () {
-        // Ambil elemen popup
         const popup = document.getElementById("popup");
         const popupMessage = document.getElementById("popup-message");
 
-        // 1. Cek Link URL di atas browser (Cari tulisan ?success=true)
+        // 1. Cek apakah di Link Browser ada tulisan '?success=true'
         const urlParams = new URLSearchParams(window.location.search);
-        const statusSukses = urlParams.get('success');
+        const isSuccess = urlParams.get('success');
 
-        // 2. Jika ketemu tulisan 'true', munculkan popup
-        if (statusSukses === 'true') {
+        // 2. Jika ada, berarti pesan baru saja terkirim
+        if (isSuccess === 'true') {
             popupMessage.innerText = "Pesan berhasil dikirim! Terima kasih.";
             popup.style.display = "flex";
 
-            // 3. Bersihkan Link URL biar rapi kembali (Hapus ?success=true)
+            // 3. Hapus tulisan '?success=true' dari link biar bersih
             window.history.replaceState({}, document.title, window.location.pathname);
         }
     });
@@ -382,7 +381,7 @@
     function closePopup() {
         document.getElementById("popup").style.display = "none";
     }
-</script>
+    </script>
 </body>
 
 </html>
