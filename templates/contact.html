@@ -223,6 +223,30 @@
             transform: rotate(70deg) translateY(-50%);
         }
 
+
+        .popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            /* Awalnya sembunyi */
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .popup-box {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            min-width: 300px;
+        }
+
+
         @media (max-width: 768px) {
             .navbar {
                 flex-direction: column;
@@ -359,48 +383,35 @@
 
     </div>
 
-  <script>
-    // Tunggu sampai halaman selesai dimuat sepenuhnya
-    window.onload = function() {
-        
-        // 1. Tes apakah Script jalan?
-        // Kalau kotak ini TIDAK muncul saat refresh, berarti script kamu error total / tidak terpanggil
-        // alert("Tes Script: Aktif!"); 
+    <div id="popup" class="popup" style="display: none;">
+        <div class="popup-box">
+            <div style="font-size: 50px; color: #4CAF50;">✔</div>
+            <p id="popup-message">Pesan berhasil dikirim!</p>
+            <button onclick="closePopup()"
+                style="background-color: #05521c; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">OK</button>
+        </div>
+    </div>
 
-        // 2. Ambil elemen popup
-        const popup = document.getElementById("popup");
-        const popupMessage = document.getElementById("popup-message");
+    <script>
+        window.onload = function () {
+            const popup = document.getElementById("popup");
+            const popupMessage = document.getElementById("popup-message");
 
-        // Cek apakah elemen ditemukan?
-        if (!popup || !popupMessage) {
-            alert("GAWAT! Elemen ID 'popup' tidak ditemukan di HTML.");
-            return;
+            const urlParams = new URLSearchParams(window.location.search);
+            const isSuccess = urlParams.get('success');
+
+            if (isSuccess === 'true') {
+                if (popup) {
+                    popup.style.display = "flex"; // Menampilkan popup
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                }
+            }
+        };
+
+        function closePopup() {
+            document.getElementById("popup").style.display = "none";
         }
-
-        // 3. Baca URL Browser
-        const urlParams = new URLSearchParams(window.location.search);
-        const isSuccess = urlParams.get('success');
-
-        // 4. Logika Utama
-        if (isSuccess === 'true') {
-            // Paksa munculkan Alert Browser (Pasti Kelihatan)
-            alert("PESAN SUKSES DITERIMA! Klik OK untuk lihat Popup.");
-            
-            // Munculkan Popup HTML
-            popupMessage.innerText = "Pesan berhasil dikirim! Terima kasih.";
-            popup.style.display = "flex"; // Pastikan CSS .popup punya display: none awalnya
-
-            // Bersihkan URL
-            window.history.replaceState({}, document.title, window.location.pathname);
-        } else {
-            console.log("Tidak ada tanda success=true di URL.");
-        }
-    };
-
-    function closePopup() {
-        document.getElementById("popup").style.display = "none";
-    }
-</script>
+    </script>
 </body>
 
 </html>
