@@ -31,6 +31,7 @@ app.config['MYSQL_SSL_DISABLED'] = False
 
 
 
+
 mail = Mail(app)
 mysql = MySQL(app)
 
