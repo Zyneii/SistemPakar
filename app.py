@@ -19,15 +19,14 @@ app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY", "aiSistemPakarDefaultKey")
 
 
-app.config["MYSQL_HOST"] = "mysql-282a2605-sistempakar.l.aivencloud.com"
-app.config["MYSQL_PORT"] = 27321
-app.config["MYSQL_USER"] = "avnadmin"
-app.config["MYSQL_PASSWORD"] = "AVNS_N5OVx-WAio0uB50HaNI"
-app.config["MYSQL_DB"] = "defaultdb"
+app.config["MYSQL_HOST"] = os.getenv("MYSQL_HOST")
+app.config["MYSQL_PORT"] = int(os.getenv("MYSQL_PORT", 27321))
+app.config["MYSQL_USER"] = os.getenv("MYSQL_USER")
+app.config["MYSQL_PASSWORD"] = os.getenv("MYSQL_PASSWORD") 
+app.config["MYSQL_DB"] = os.getenv("MYSQL_DB")
 
-# Tambahan Settingan SSL (Wajib buat Aiven):
+
 app.config['MYSQL_SSL_DISABLED'] = False
-
 
 
 
