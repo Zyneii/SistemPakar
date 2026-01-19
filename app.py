@@ -204,10 +204,11 @@ def admin_gejala():
 def tambah_gejala():
     idg = request.form['id_gejala']
     nama = request.form['nama_gejala']
+    kategori = request.form['kategori']
     
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("INSERT INTO tb_gejala (id_gejala, Nama_gejala) VALUES (%s,%s)", (idg, nama))
+    cursor.execute("INSERT INTO tb_gejala (id_gejala, Nama_gejala, kategori) VALUES (%s, %s, %s)", (idg, nama, kategori))
     conn.commit()
     cursor.close()
     conn.close()
@@ -220,10 +221,11 @@ def tambah_gejala():
 def edit_gejala():
     idg = request.form['id_gejala']
     nama = request.form['nama_gejala']
+    kategori = request.form['kategori']
     
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("UPDATE tb_gejala SET Nama_gejala=%s WHERE id_gejala=%s", (nama, idg))
+    cursor.execute("UPDATE tb_gejala SET Nama_gejala=%s, kategori=%s WHERE id_gejala=%s", (nama, kategori, idg))
     conn.commit()
     cursor.close()
     conn.close()

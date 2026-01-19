@@ -12,6 +12,7 @@
             <tr>
                 <th>ID Gejala</th>
                 <th>Nama Gejala</th>
+                <th>Kategori</th>
                 <th>Aksi</th>
             </tr>
         </thead>
@@ -21,6 +22,7 @@
             <tr>
                 <td>{{ g.id_gejala }}</td>
                 <td>{{ g.Nama_gejala }}</td>
+                <td>{{ g.kategori }}</td>
 
                 <td>
                     <!-- EDIT -->
@@ -28,6 +30,7 @@
                         onclick="openEditModal(this)"
                         data-id="{{ g.id_gejala }}"
                         data-nama="{{ g.Nama_gejala }}"
+                        data-kategori="{{ g.kategori }}"
                         data-action="/gejala/edit/{{ g.id_gejala }}">
                         Edit
                     </a>
@@ -64,6 +67,9 @@
             <label>Nama Gejala</label>
             <input type="text" name="nama_gejala" required>
 
+            <label>Kategori</label>
+            <input type="text" name="kategori" required>
+
             <button type="submit" class="btn-modal-submit">Simpan</button>
         </form>
     </div>
@@ -79,7 +85,7 @@
         <span class="modal-close" onclick="closeEditModal()">&times;</span>
         <h3>Edit Gejala</h3>
 
-        <form id="formEdit" method="POST">
+        <form id="formEdit" action="/gejala/edit" method="POST">
 
             <label>ID Gejala</label>
             <input type="text" id="edit_id" name="id_gejala" readonly>
@@ -87,7 +93,10 @@
             <label>Nama Gejala</label>
             <input type="text" id="edit_nama" name="nama_gejala" required>
 
-            <button type="submit" class="btn-modal-submit">Simpan</button>
+            <label>Kategori</label>
+            <input type="text" id="edit_kategori" name="kategori" required>
+
+            <button type="submit" class="btn-modal-submit">Simpan Perubahan</button>
         </form>
     </div>
 </div>
